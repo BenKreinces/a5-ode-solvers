@@ -1,57 +1,26 @@
-import numpy as np
-def validation(y_i, t_i, t_f, n_steps):
-    if n_steps < 1 or not isinstance(n_steps, int):
-        raise ValueError("Number of steps must be a positive integer")
-    elif t_f <= t_i:
-        raise ValueError("Final time must be greater than initial crazy")
-    elif np.asarray(y_i).ndim > 1:
-        raise ValueError("Y_i must be one-dimensional")
-    
-def euler(f, y_i, t_i, t_f, n_steps):
-    validation(y_i, t_i, t_f, n_steps)
-    h = (t_f - t_i) / (n_steps)
-    t  = []
-    y = []
-    y.append(np.asarray(y_i, dtype = float))
-    t.append(t_i)
-    for i in range(n_steps):
-        y.append(y[-1] + h * f(t[-1], y[-1]))
-        t.append(t[-1] + h)
+import solvers
+import matplotlib.pyplot as plt
 
-    return t, y
+def stability_warmup_f(t: float, y: float) -> float:
+    a1 = 1
+    return -1 * a1 * y
 
-def euler_cromer(f, y_i: tuple[float, float], t_i, t_f, n_steps):
-    validation(y_i, t_i, t_f, n_steps)
-    h = (t_f - t_i) / (n_steps)
-    t  = []
-    y = []
-    x = y_i[0]
-    v = y_i[1]
-    y.append([x,v])
-    t.append(t_i)
-    for i in range(n_steps):
-        v = y[-1][1] + h * f(t[-1], [y[-1][0],y[-1][1]])[1]
-        x = y[-1][0] + h * v
-        t.append(t[-1] + h)
-        y.append([x,v])
-    return t, y
+def stability_warmup() -> None:
+    yi = 1
+    ti = 0
+    tf = 10
+    nSteps1 = 4
+    nSteps2 = 10
+    nSteps3 = 20
+    t1, y1 = solvers.euler(stability_warmup_f, yi, ti, tf, nSteps1)
+    t2, y2 = solvers.euler(stability_warmup_f, yi, ti, tf, nSteps2)
+    t3, y3 = solvers.euler(stability_warmup_f, yi, ti, tf, nSteps3)
+    plt.plot(t1, y1, label="h = 2.5")
+    plt.plot(t2, y2, label="h = 1.0")
+    plt.plot(t3, y3, label="h = 0.5")
+    plt.xlabel("Time")
+    plt.ylabel("y(t)")
+    plt.legend()
+    plt.show()
 
-
-def rk4(f, y_i, t_i, t_f, n_steps):
-    validation(y_i, t_i, t_f, n_steps)
-    h = (t_f - t_i) / n_steps
-    t = []
-    y = []
-    y.append(np.asarray(y_i, dtype=float))
-    t.append(t_i)
-    for i in range(n_steps):
-        k1 = np.asarray(f(t[-1], y[-1]))
-        k2 = np.asarray(f(t[-1] + h/2, y[-1] + (h/2) * k1))
-        k3 = np.asarray(f(t[-1] + h/2, y[-1] + (h/2) * k2))
-        k4 = np.asarray(f(t[-1] + h, y[-1] + h * k3))
-        y.append(y[-1] + (h/6) * (k1 + 2*k2 + 2*k3 + k4))
-        t.append(t[-1] + h)
-
-    return t, y
-                
-                
+stability_warmup()
