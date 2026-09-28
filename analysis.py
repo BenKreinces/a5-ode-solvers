@@ -1,42 +1,57 @@
+import numpy as np
+def validation(y_i, t_i, t_f, n_steps):
+    if n_steps < 1 or not isinstance(n_steps, int):
+        raise ValueError("Number of steps must be a positive integer")
+    elif t_f <= t_i:
+        raise ValueError("Final time must be greater than initial crazy")
+    elif np.asarray(y_i).ndim > 1:
+        raise ValueError("Y_i must be one-dimensional")
+    
 def euler(f, y_i, t_i, t_f, n_steps):
-    h = (t_f - t_i) / (n_steps + 1)
+    validation(y_i, t_i, t_f, n_steps)
+    h = (t_f - t_i) / (n_steps)
     t  = []
     y = []
-    y.append(y_i)
+    y.append(np.asarray(y_i, dtype = float))
     t.append(t_i)
-    for i in range(1, n_steps):
+    for i in range(n_steps):
         y.append(y[-1] + h * f(t[-1], y[-1]))
         t.append(t[-1] + h)
-        i+=1
+
     return t, y
 
 def euler_cromer(f, y_i: tuple[float, float], t_i, t_f, n_steps):
-    h = (t_f - t_i) / (n_steps + 1)
+    validation(y_i, t_i, t_f, n_steps)
+    h = (t_f - t_i) / (n_steps)
     t  = []
     y = []
-    v = []
-    y.append(y_i[0])
-    v.append(y_i[1])
+    x = y_i[0]
+    v = y_i[1]
+    y.append([x,v])
     t.append(t_i)
-    for i in range(1, n_steps):
-        v.append(v[-1] + h * f(t[-1], v[-1]))
-        y.append(y[-1] + h * v[-1])
-        i+=1
+    for i in range(n_steps):
+        v = y[-1][1] + h * f(t[-1], [y[-1][0],y[-1][1]])[1]
+        x = y[-1][0] + h * v
+        t.append(t[-1] + h)
+        y.append([x,v])
     return t, y
 
 
 def rk4(f, y_i, t_i, t_f, n_steps):
-    h = (t_f - t_i) / (n_steps + 1)
-    t  = []
+    validation(y_i, t_i, t_f, n_steps)
+    h = (t_f - t_i) / n_steps
+    t = []
     y = []
-    y.append(y_i)
+    y.append(np.asarray(y_i, dtype=float))
     t.append(t_i)
-    for i in range(1, n_steps):
-        k1 = f(t[-1], y[-1])
-        k2 = f(t[-1] + h/2, y[-1] + (h/2) * k1)
-        k3 = f(t[-1] + h/2, y[-1] + (h/2) * k2)
-        k4 = f(t[-1] + h, y[-1] + h * k3)
+    for i in range(n_steps):
+        k1 = np.asarray(f(t[-1], y[-1]))
+        k2 = np.asarray(f(t[-1] + h/2, y[-1] + (h/2) * k1))
+        k3 = np.asarray(f(t[-1] + h/2, y[-1] + (h/2) * k2))
+        k4 = np.asarray(f(t[-1] + h, y[-1] + h * k3))
         y.append(y[-1] + (h/6) * (k1 + 2*k2 + 2*k3 + k4))
         t.append(t[-1] + h)
+
+    return t, y
                 
                 
