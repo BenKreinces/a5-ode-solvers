@@ -127,4 +127,7 @@ def damped_harmonic_oscillator() -> None:
     ax3.legend()
     plt.show()
 
-damped_harmonic_oscillator()
+if __name__ == "__main__":
+    stability_warmup()
+    simple_harmonic_oscillator()
+    damped_harmonic_oscillator()
