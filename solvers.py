@@ -1,14 +1,14 @@
 import numpy as np
-
+from typing import Callable
 def validation(y_i: float | list | tuple, t_i: float, t_f: float, n_steps: int) -> None:
     if n_steps < 1 or not isinstance(n_steps, int):
         raise ValueError("Number of steps must be a positive integer")
     elif t_f <= t_i:
-        raise ValueError("Final time must be greater than initial crazy")
+        raise ValueError("Final time must be greater than initial time")
     elif np.asarray(y_i).ndim > 1:
         raise ValueError("Y_i must be one-dimensional")
     
-def euler(f, y_i: float | list | tuple, t_i: float, t_f: float, n_steps: int) -> tuple[list, list]:
+def euler(f: Callable, y_i: float | list | tuple, t_i: float, t_f: float, n_steps: int) -> tuple[list, list]:
     validation(y_i, t_i, t_f, n_steps)
     h = (t_f - t_i) / (n_steps)
     t  = []
@@ -21,7 +21,7 @@ def euler(f, y_i: float | list | tuple, t_i: float, t_f: float, n_steps: int) ->
 
     return t, y
 
-def euler_cromer(f, y_i: tuple[float, float], t_i: float, t_f: float, n_steps: int) -> tuple[list, list]:
+def euler_cromer(f: Callable, y_i: tuple[float, float], t_i: float, t_f: float, n_steps: int) -> tuple[list, list]:
     validation(y_i, t_i, t_f, n_steps)
     h = (t_f - t_i) / (n_steps)
     t  = []
@@ -38,7 +38,7 @@ def euler_cromer(f, y_i: tuple[float, float], t_i: float, t_f: float, n_steps: i
     return t, y
 
 
-def rk4(f, y_i: float | list | tuple, t_i: float, t_f: float, n_steps: int) -> tuple[list, list]:
+def rk4(f: Callable, y_i: float | list | tuple, t_i: float, t_f: float, n_steps: int) -> tuple[list, list]:
     validation(y_i, t_i, t_f, n_steps)
     h = (t_f - t_i) / n_steps
     t = []
